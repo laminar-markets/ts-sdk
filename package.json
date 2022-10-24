@@ -1,7 +1,7 @@
 {
   "name": "@laminar-markets/sdk",
-  "version": "0.0.0",
-  "description": "",
+  "version": "0.1.0",
+  "description": "TypeScript SDK for Laminar Markets",
   "license": "MIT",
   "main": "src/index.ts",
   "scripts": {
@@ -11,6 +11,14 @@
     "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
     "test": "jest --runInBand",
     "typedoc": "typedoc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/laminar-markets/ts-sdk.git"
+  },
+  "homepage": "https://ts-sdk-docs.laminar.markets",
+  "bugs": {
+    "url": "https://github.com/laminar-markets/ts-sdk/issues"
   },
   "dependencies": {
     "ajv-formats": "^2.1.1",
