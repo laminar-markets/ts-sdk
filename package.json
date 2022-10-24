@@ -2,6 +2,7 @@
   "name": "@laminar-markets/sdk",
   "version": "0.0.0",
   "description": "",
+  "license": "MIT",
   "main": "src/index.ts",
   "scripts": {
     "build": "tsc",
