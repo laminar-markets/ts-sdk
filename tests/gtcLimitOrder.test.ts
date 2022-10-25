@@ -16,7 +16,6 @@ const quoteTag = `${dexAddress}::coin::FakeQuoteCoin`;
 
 describe("gtc limit order", () => {
   let dex: AptosAccount;
-  let user: AptosAccount;
 
   let client: AptosClient;
   let faucetClient: FaucetClient;
@@ -26,11 +25,13 @@ describe("gtc limit order", () => {
     faucetClient = new FaucetClient(nodeUrl, faucetUrl);
 
     dex = new AptosAccount(dexPrivateKey, dexAddress);
-    user = new AptosAccount();
-
-    await faucetClient.fundAccount(user.address(), 1e9);
 
     await initDexResources(client, dex, dex, baseTag, quoteTag);
+  });
+
+  test("place limit bid order", async () => {
+    const user = new AptosAccount();
+    await faucetClient.fundAccount(user.address(), 1e9);
     await initUserResources(
       client,
       user,
@@ -39,9 +40,7 @@ describe("gtc limit order", () => {
       baseTag,
       quoteTag
     );
-  });
 
-  test("place limit bid order", async () => {
     await mintManagedCoin(client, dex, quoteTag, user.address(), 1_000_000);
     const txn = await placeLimitOrder(
       client,
@@ -77,6 +76,17 @@ describe("gtc limit order", () => {
   });
 
   test("place limit ask order", async () => {
+    const user = new AptosAccount();
+    await faucetClient.fundAccount(user.address(), 1e9);
+    await initUserResources(
+      client,
+      user,
+      dex.address(),
+      dex.address(),
+      baseTag,
+      quoteTag
+    );
+
     await mintManagedCoin(client, dex, baseTag, user.address(), 1_000_000);
     const txn = await placeLimitOrder(
       client,
