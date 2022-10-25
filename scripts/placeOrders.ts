@@ -18,7 +18,7 @@ const logTxnResult = (txn: Types.Transaction) => {
   }
 };
 
-async function testGetBidsBookTop() {
+async function main() {
   const client = new AptosClient(nodeUrl);
   const faucetClient = new FaucetClient(nodeUrl, faucetUrl);
 
@@ -112,6 +112,6 @@ async function testGetBidsBookTop() {
   logger.info(bids);
 }
 
-testGetBidsBookTop();
+main();
 
 export {};

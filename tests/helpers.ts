@@ -99,6 +99,18 @@ export async function initDexResources(
 
   if (
     resources.find(
+      ({ type }) => type == `${dex.address()}::book::OrderBookStore`
+    ) == null
+  ) {
+    logger.info("Registering user to orderbook");
+    const txn = await registerUser(client, dex);
+    logTxnResult(txn);
+  } else {
+    logger.info("User already registered.");
+  }
+
+  if (
+    resources.find(
       ({ type }) =>
         type ==
         `${bookOwner.address()}::book::OrderBookSigner<${baseTag}, ${quoteTag}>`
@@ -161,6 +173,6 @@ export async function initUserResources(
     const txn = await registerUser(client, user);
     logTxnResult(txn);
   } else {
-    logger.info("FakeQuoteCoin already registered.");
+    logger.info("User already registered.");
   }
 }

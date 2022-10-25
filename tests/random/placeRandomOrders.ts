@@ -1,9 +1,5 @@
 import { AptosAccount, AptosClient, FaucetClient } from "aptos";
-import {
-  getAsksBookTop,
-  getBidsBookTop,
-  placeLimitOrder,
-} from "../../src/book";
+import { placeLimitOrder } from "../../src/book";
 import {
   dexAddress,
   dexPrivateKey,
@@ -12,12 +8,7 @@ import {
 } from "../../src/constants";
 import { mintManagedCoin } from "../../src/managedCoin";
 import { Side, TimeInForce } from "../../types/global";
-import {
-  initDexResources,
-  initUserResources,
-  logger,
-  logTxnResult,
-} from "../helpers";
+import { initDexResources, initUserResources, logger } from "../helpers";
 import { randomNumber, randomSide } from "./randUtils";
 
 type OrderRecord = {
