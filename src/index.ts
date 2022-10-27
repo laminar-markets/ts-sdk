@@ -15,4 +15,10 @@ export {
   amendOrder,
   getBidsBookTop,
   getAsksBookTop,
+  createOrderbookPayload,
+  registerUserPayload,
+  placeLimitOrderPayload,
+  placeMarketOrderPayload,
+  cancelOrderPayload,
+  amendOrderPayload,
 } from "./book";
