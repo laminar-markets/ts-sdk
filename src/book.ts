@@ -4,29 +4,17 @@ import { BookLevel, Side, TimeInForce } from "../types/global";
 import { SplayTree, UnparsedTree } from "./flowUtils/splayTree";
 import { Iterator } from "./flowUtils/iterator";
 import { Order } from "./flowUtils";
-import { sideToU8, signSubmitAndWaitFor, timeInForceToU8 } from "./util";
+import { signSubmitAndWaitFor } from "./util";
 import { dexAddress, defaultOptions } from "./constants";
 import { Queue, UnparsedQueue } from "./flowUtils/queue";
-
-declare type EntryFunctionPayload = {
-  function: string;
-  type_arguments: Array<string>;
-  arguments: Array<any>;
-};
-
-export function createOrderbookPayload(
-  baseTag: string,
-  quoteTag: string,
-  priceDecimals: number,
-  sizeDecimals: number,
-  minSizeAmount: number
-): EntryFunctionPayload {
-  return {
-    function: `${dexAddress}::book::create_orderbook`,
-    type_arguments: [baseTag, quoteTag],
-    arguments: [priceDecimals, sizeDecimals, minSizeAmount],
-  };
-}
+import {
+  createOrderbookPayload,
+  registerUserPayload,
+  placeLimitOrderPayload,
+  placeMarketOrderPayload,
+  cancelOrderPayload,
+  amendOrderPayload,
+} from "./payload";
 
 /**
  * Creates a new orderbook for the given base/quote pair.
@@ -75,6 +63,7 @@ export async function createOrderbook(
   minSizeAmount: number
 ): Promise<Types.Transaction> {
   const payload = createOrderbookPayload(
+    dexAddress,
     baseTag,
     quoteTag,
     priceDecimals,
@@ -83,14 +72,6 @@ export async function createOrderbook(
   );
   const rawTxn = await client.generateTransaction(account.address(), payload);
   return await signSubmitAndWaitFor(client, account, rawTxn);
-}
-
-export function registerUserPayload(): EntryFunctionPayload {
-  return {
-    function: `${dexAddress}::book::register_user`,
-    type_arguments: [],
-    arguments: [],
-  };
 }
 
 /**
@@ -117,37 +98,13 @@ export async function registerUser(
   client: AptosClient,
   account: AptosAccount
 ): Promise<Types.Transaction> {
-  const payload = registerUserPayload();
+  const payload = registerUserPayload(dexAddress);
   const rawTxn = await client.generateTransaction(
     account.address(),
     payload,
     defaultOptions
   );
   return await signSubmitAndWaitFor(client, account, rawTxn);
-}
-
-export function placeLimitOrderPayload(
-  bookOwner: HexString,
-  baseTag: string,
-  quoteTag: string,
-  side: Side,
-  price: number,
-  size: number,
-  timeInForce: TimeInForce,
-  postOnly: boolean
-): EntryFunctionPayload {
-  return {
-    function: `${dexAddress}::book::place_limit_order`,
-    type_arguments: [baseTag, quoteTag],
-    arguments: [
-      bookOwner,
-      sideToU8(side),
-      price,
-      size,
-      timeInForceToU8(timeInForce),
-      postOnly,
-    ],
-  };
 }
 
 /**
@@ -203,6 +160,7 @@ export async function placeLimitOrder(
   postOnly: boolean
 ): Promise<Types.Transaction> {
   const payload = placeLimitOrderPayload(
+    dexAddress,
     bookOwner,
     baseTag,
     quoteTag,
@@ -218,20 +176,6 @@ export async function placeLimitOrder(
     defaultOptions
   );
   return await signSubmitAndWaitFor(client, account, rawTxn);
-}
-
-export function placeMarketOrderPayload(
-  bookOwner: HexString,
-  baseTag: string,
-  quoteTag: string,
-  side: Side,
-  size: number
-): EntryFunctionPayload {
-  return {
-    function: `${dexAddress}::book::place_market_order`,
-    type_arguments: [baseTag, quoteTag],
-    arguments: [bookOwner, sideToU8(side), size],
-  };
 }
 
 /**
@@ -276,6 +220,7 @@ export async function placeMarketOrder(
   size: number
 ): Promise<Types.Transaction> {
   const payload = placeMarketOrderPayload(
+    dexAddress,
     bookOwner,
     baseTag,
     quoteTag,
@@ -288,20 +233,6 @@ export async function placeMarketOrder(
     defaultOptions
   );
   return await signSubmitAndWaitFor(client, account, rawTxn);
-}
-
-export function cancelOrderPayload(
-  bookOwner: HexString,
-  baseTag: string,
-  quoteTag: string,
-  idCreationNum: number,
-  side: Side
-): EntryFunctionPayload {
-  return {
-    function: `${dexAddress}::book::cancel_order`,
-    type_arguments: [baseTag, quoteTag],
-    arguments: [bookOwner, idCreationNum, sideToU8(side)],
-  };
 }
 
 /**
@@ -341,6 +272,7 @@ export async function cancelOrder(
   side: Side
 ): Promise<Types.Transaction> {
   const payload = cancelOrderPayload(
+    dexAddress,
     bookOwner,
     baseTag,
     quoteTag,
@@ -353,22 +285,6 @@ export async function cancelOrder(
     defaultOptions
   );
   return await signSubmitAndWaitFor(client, account, rawTxn);
-}
-
-export function amendOrderPayload(
-  bookOwner: HexString,
-  baseTag: string,
-  quoteTag: string,
-  idCreationNum: number,
-  side: Side,
-  price: number,
-  size: number
-): EntryFunctionPayload {
-  return {
-    function: `${dexAddress}::book::amend_order`,
-    type_arguments: [baseTag, quoteTag],
-    arguments: [bookOwner, idCreationNum, sideToU8(side), price, size],
-  };
 }
 
 /**
@@ -425,6 +341,7 @@ export async function amendOrder(
   size: number
 ): Promise<Types.Transaction> {
   const payload = amendOrderPayload(
+    dexAddress,
     bookOwner,
     baseTag,
     quoteTag,
