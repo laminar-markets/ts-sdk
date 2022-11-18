@@ -80,7 +80,7 @@ export async function initDexResources(
     null
   ) {
     logger.info("Registering FakeBaseCoin");
-    const txn = await registerCoin(client, dex, baseTag);
+    const txn = await registerCoin(client, dex, dex.address(), baseTag);
     logTxnResult(txn);
   } else {
     logger.info("FakeBaseCoin already registered.");
@@ -91,7 +91,7 @@ export async function initDexResources(
     null
   ) {
     logger.info("Registering FakeQuoteCoin");
-    const txn = await registerCoin(client, dex, quoteTag);
+    const txn = await registerCoin(client, dex, dex.address(), quoteTag);
     logTxnResult(txn);
   } else {
     logger.info("FakeQuoteCoin already registered.");
@@ -103,7 +103,7 @@ export async function initDexResources(
     ) == null
   ) {
     logger.info("Registering user to orderbook");
-    const txn = await registerUser(client, dex);
+    const txn = await registerUser(client, dex, dex.address());
     logTxnResult(txn);
   } else {
     logger.info("User already registered.");
@@ -120,6 +120,7 @@ export async function initDexResources(
     const txn = await createOrderbook(
       client,
       bookOwner,
+      dex.address(),
       baseTag,
       quoteTag,
       3,
@@ -147,7 +148,7 @@ export async function initUserResources(
     null
   ) {
     logger.info("Registering FakeBaseCoin");
-    const txn = await registerCoin(client, user, baseTag);
+    const txn = await registerCoin(client, user, dexAddress, baseTag);
     logTxnResult(txn);
   } else {
     logger.info("FakeBaseCoin already registered.");
@@ -158,7 +159,7 @@ export async function initUserResources(
     null
   ) {
     logger.info("Registering FakeQuoteCoin");
-    const txn = await registerCoin(client, user, quoteTag);
+    const txn = await registerCoin(client, user, dexAddress, quoteTag);
     logTxnResult(txn);
   } else {
     logger.info("FakeQuoteCoin already registered.");
@@ -170,7 +171,7 @@ export async function initUserResources(
     ) == null
   ) {
     logger.info("Registering user to orderbook");
-    const txn = await registerUser(client, user);
+    const txn = await registerUser(client, user, dexAddress);
     logTxnResult(txn);
   } else {
     logger.info("User already registered.");

@@ -3,7 +3,7 @@ import { Side, TimeInForce } from "../types/global";
 import { sideToU8, timeInForceToU8 } from "./util";
 
 export function createOrderbookPayload(
-  dexAddress: string,
+  dexAddress: HexString,
   baseTag: string,
   quoteTag: string,
   priceDecimals: number,
@@ -18,7 +18,7 @@ export function createOrderbookPayload(
 }
 
 export function registerUserPayload(
-  dexAddress: string
+  dexAddress: HexString
 ): Types.EntryFunctionPayload {
   return {
     function: `${dexAddress}::book::register_user`,
@@ -28,7 +28,7 @@ export function registerUserPayload(
 }
 
 export function placeLimitOrderPayload(
-  dexAddress: string,
+  dexAddress: HexString,
   bookOwner: HexString,
   baseTag: string,
   quoteTag: string,
@@ -53,7 +53,7 @@ export function placeLimitOrderPayload(
 }
 
 export function placeMarketOrderPayload(
-  dexAddress: string,
+  dexAddress: HexString,
   bookOwner: HexString,
   baseTag: string,
   quoteTag: string,
@@ -68,7 +68,7 @@ export function placeMarketOrderPayload(
 }
 
 export function cancelOrderPayload(
-  dexAddress: string,
+  dexAddress: HexString,
   bookOwner: HexString,
   baseTag: string,
   quoteTag: string,
@@ -83,7 +83,7 @@ export function cancelOrderPayload(
 }
 
 export function amendOrderPayload(
-  dexAddress: string,
+  dexAddress: HexString,
   bookOwner: HexString,
   baseTag: string,
   quoteTag: string,
