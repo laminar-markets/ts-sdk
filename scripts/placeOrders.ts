@@ -4,7 +4,7 @@ import {
   dexPrivateKey,
   faucetUrl,
   nodeUrl,
-} from "../src/constants";
+} from "../tests/constants";
 import { getBidsBookTop, placeLimitOrder } from "../src/book";
 import { initDexResources, initUserResources, logger } from "../tests/helpers";
 import { getBalance } from "../src/coin";
@@ -78,6 +78,7 @@ async function main() {
     client,
     user,
     dex.address(),
+    dex.address(),
     baseTag,
     quoteTag,
     "buy",
@@ -91,6 +92,7 @@ async function main() {
   const txn2 = await placeLimitOrder(
     client,
     user,
+    dex.address(),
     dex.address(),
     baseTag,
     quoteTag,

@@ -5,7 +5,7 @@ import {
   dexPrivateKey,
   faucetUrl,
   nodeUrl,
-} from "../src/constants";
+} from "../tests/constants";
 import { mintManagedCoin } from "../src/managedCoin";
 import { initDexResources, initUserResources } from "./helpers";
 

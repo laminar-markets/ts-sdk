@@ -58,8 +58,3 @@ export const dexPrivateKey = Uint8Array.from(
     "hex"
   )
 );
-
-export const defaultOptions = {
-  max_gas_amount: "10000",
-  gas_unit_price: "100",
-};

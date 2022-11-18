@@ -4,8 +4,7 @@ import { BookLevel, Side, TimeInForce } from "../types/global";
 import { SplayTree, UnparsedTree } from "./flowUtils/splayTree";
 import { Iterator } from "./flowUtils/iterator";
 import { Order } from "./flowUtils";
-import { signSubmitAndWaitFor } from "./util";
-import { dexAddress, defaultOptions } from "./constants";
+import { defaultOptions, signSubmitAndWaitFor } from "./util";
 import { Queue, UnparsedQueue } from "./flowUtils/queue";
 import {
   createOrderbookPayload,
@@ -24,6 +23,7 @@ import {
  *
  * @param client - The Aptos client.
  * @param account - The account that will own the orderbook.
+ * @param dexAddress - The dex address.
  * @param baseTag - The tag for the base currency of the orderbook, e.g. 0x1::aptos_coin::AptosCoin.
  * @param quoteTag - The tag for the quote currency of the orderbook.
  * @param priceDecimals - The number of decimals places the orderbook will allow for price.
@@ -38,6 +38,7 @@ import {
  * const txn = await createOrderbook(
  *   client,
  *   account,
+ *   "0xd",
  *   "0x1::aptos_coin::AptosCoin",
  *   "0x1::aptos_coin::AptosCoin",
  *   4,
@@ -56,6 +57,7 @@ import {
 export async function createOrderbook(
   client: AptosClient,
   account: AptosAccount,
+  dexAddress: HexString,
   baseTag: string,
   quoteTag: string,
   priceDecimals: number,
@@ -82,6 +84,7 @@ export async function createOrderbook(
  *
  * @param client - The Aptos client.
  * @param account - The account to register for the orderbook.
+ * @param dexAddress - The dex address.
  *
  * @returns - A promise containing the transaction.
  *
@@ -91,12 +94,14 @@ export async function createOrderbook(
  * const txn = await registerBookUser(
  *   client,
  *   account,
+ *   "0xd"
  * );
  * ```
  */
 export async function registerUser(
   client: AptosClient,
-  account: AptosAccount
+  account: AptosAccount,
+  dexAddress: HexString
 ): Promise<Types.Transaction> {
   const payload = registerUserPayload(dexAddress);
   const rawTxn = await client.generateTransaction(
@@ -114,6 +119,7 @@ export async function registerUser(
  *
  * @param client - The Aptos client.
  * @param account - The account placing the order.
+ * @param dexAddress - The dex address.
  * @param bookOwner - The address of the orderbook owner.
  * @param baseTag - The tag for the base currency of the orderbook.
  * @param quoteTag - The tag for the quote currency of the orderbook.
@@ -131,6 +137,7 @@ export async function registerUser(
  * const txn = await placeLimitOrder(
  *   client,
  *   account,
+ *   "0xd",
  *   "0xb",
  *   "0x1::aptos_coin::AptosCoin",
  *   "0x1::aptos_coin::AptosCoin",
@@ -150,6 +157,7 @@ export async function registerUser(
 export async function placeLimitOrder(
   client: AptosClient,
   account: AptosAccount,
+  dexAddress: HexString,
   bookOwner: HexString,
   baseTag: string,
   quoteTag: string,
@@ -185,6 +193,7 @@ export async function placeLimitOrder(
  *
  * @param client - The Aptos client.
  * @param account - The account placing the order.
+ * @param dexAddress - The dex address.
  * @param bookOwner - The address of the orderbook owner.
  * @param baseTag - The tag for the base currency of the orderbook.
  * @param quoteTag - The tag for the quote currency of the orderbook.
@@ -199,6 +208,7 @@ export async function placeLimitOrder(
  * const txn = await placeMarketOrder(
  *   client,
  *   account,
+ *   "0xd",
  *   "0xb",
  *   "0x1::aptos_coin::AptosCoin",
  *   "0x1::aptos_coin::AptosCoin",
@@ -213,6 +223,7 @@ export async function placeLimitOrder(
 export async function placeMarketOrder(
   client: AptosClient,
   account: AptosAccount,
+  dexAddress: HexString,
   bookOwner: HexString,
   baseTag: string,
   quoteTag: string,
@@ -240,6 +251,7 @@ export async function placeMarketOrder(
  *
  * @param client - The Aptos client.
  * @param account - The account placing the order.
+ * @param dexAddress - The dex address.
  * @param bookOwner - The address of the orderbook owner.
  * @param baseTag - The tag for the base currency of the orderbook.
  * @param quoteTag - The tag for the quote currency of the orderbook.
@@ -254,6 +266,7 @@ export async function placeMarketOrder(
  * const txn = await placeMarketOrder(
  *   client,
  *   account,
+ *   "0xd",
  *   "0xb",
  *   "0x1::aptos_coin::AptosCoin",
  *   "0x1::aptos_coin::AptosCoin",
@@ -265,6 +278,7 @@ export async function placeMarketOrder(
 export async function cancelOrder(
   client: AptosClient,
   account: AptosAccount,
+  dexAddress: HexString,
   bookOwner: HexString,
   baseTag: string,
   quoteTag: string,
@@ -296,6 +310,7 @@ export async function cancelOrder(
  *
  * @param client - The Aptos client.
  * @param account - The account placing the order.
+ * @param dexAddress - The dex address.
  * @param bookOwner - The address of the orderbook owner.
  * @param baseTag - The tag for the base currency of the orderbook.
  * @param quoteTag - The tag for the quote currency of the orderbook.
@@ -312,6 +327,7 @@ export async function cancelOrder(
  * const txn = await placeMarketOrder(
  *   client,
  *   account,
+ *   "0xd",
  *   "0xb",
  *   "0x1::aptos_coin::AptosCoin",
  *   "0x1::aptos_coin::AptosCoin",
@@ -332,6 +348,7 @@ export async function cancelOrder(
 export async function amendOrder(
   client: AptosClient,
   account: AptosAccount,
+  dexAddress: HexString,
   bookOwner: HexString,
   baseTag: string,
   quoteTag: string,

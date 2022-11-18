@@ -1,5 +1,5 @@
 import { AptosAccount, AptosClient } from "aptos";
-import { dexAddress, dexPrivateKey, nodeUrl } from "../src/constants";
+import { dexAddress, dexPrivateKey, nodeUrl } from "../tests/constants";
 import { getBidsBookTop } from "../src/book";
 
 async function testGetBidsBookTop() {

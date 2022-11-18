@@ -1,7 +1,6 @@
 import { AptosAccount, AptosClient, HexString, Types } from "aptos";
 
-import { defaultOptions } from "./constants";
-import { signSubmitAndWaitFor } from "./util";
+import { defaultOptions, signSubmitAndWaitFor } from "./util";
 
 /**
  * Initialize a managed coin that can be used for testing.
