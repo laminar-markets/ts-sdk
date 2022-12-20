@@ -6,6 +6,8 @@ type Env = {
   FAUCET_URL: string;
   DEX_ADDRESS: string;
   DEX_PRIVATE_KEY: string;
+  USER_ADDRESS?: string;
+  USER_PRIVATE_KEY?: string;
 };
 
 const schema = {
@@ -25,6 +27,14 @@ const schema = {
       format: "hexString",
     },
     DEX_PRIVATE_KEY: {
+      type: "string",
+      format: "hexString",
+    },
+    USER_ADDRESS: {
+      type: "string",
+      format: "hexString",
+    },
+    USER_PRIVATE_KEY: {
       type: "string",
       format: "hexString",
     },
@@ -58,3 +68,19 @@ export const dexPrivateKey = Uint8Array.from(
     "hex"
   )
 );
+
+export const userAddress = config.USER_ADDRESS?.startsWith("0x")
+  ? config.USER_ADDRESS
+  : `0x${config.USER_ADDRESS}`;
+
+export const userPrivateKey =
+  config.USER_PRIVATE_KEY != null
+    ? Uint8Array.from(
+        Buffer.from(
+          config.USER_PRIVATE_KEY.startsWith("0x")
+            ? config.USER_PRIVATE_KEY?.substring(2)
+            : config.USER_PRIVATE_KEY,
+          "hex"
+        )
+      )
+    : undefined;
