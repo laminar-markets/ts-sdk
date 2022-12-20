@@ -1,7 +1,6 @@
 import { AptosAccount, AptosClient, HexString, Types } from "aptos";
 
-import { dexAddress, defaultOptions } from "./constants";
-import { signSubmitAndWaitFor } from "./util";
+import { defaultOptions, signSubmitAndWaitFor } from "./util";
 
 /**
  * Registers a coin type on an account. This must be run before the account
@@ -9,12 +8,14 @@ import { signSubmitAndWaitFor } from "./util";
  *
  * @param client - the Aptos client
  * @param account - The account to register the CoinType on.
+ * @param dexAddress - The dex address.
  * @param tag - The tag for the coin the user wishes to hold.
  * @returns - A promise containing the transaction.
  */
 export async function registerCoin(
   client: AptosClient,
   account: AptosAccount,
+  dexAddress: HexString,
   tag: string
 ): Promise<Types.Transaction> {
   const rawTxn = await client.generateTransaction(

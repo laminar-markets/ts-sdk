@@ -15,8 +15,15 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "rootDir": ".",
-    "outDir": "dist"
+    "outDir": "dist",
+    "declaration": true
   },
-  "include": ["src/**/*.ts", "scripts/**/*.ts", "types/*.d.ts", "process.d.ts"],
+  "include": [
+    "src/**/*.ts",
+    "scripts/**/*.ts",
+    "types/*.d.ts",
+    "process.d.ts",
+    "tests/constants.ts"
+  ],
   "exclude": ["dist", "node_modules", "tests"]
 }

@@ -70,3 +70,8 @@ export function timeInForceToU8(timeInForce: TimeInForce): number {
   };
   return timeInForceToU8Map[timeInForce];
 }
+
+export const defaultOptions = {
+  max_gas_amount: "50000",
+  gas_unit_price: "100",
+};

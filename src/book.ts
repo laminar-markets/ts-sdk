@@ -4,29 +4,16 @@ import { BookLevel, Side, TimeInForce } from "../types/global";
 import { SplayTree, UnparsedTree } from "./flowUtils/splayTree";
 import { Iterator } from "./flowUtils/iterator";
 import { Order } from "./flowUtils";
-import { sideToU8, signSubmitAndWaitFor, timeInForceToU8 } from "./util";
-import { dexAddress, defaultOptions } from "./constants";
+import { defaultOptions, signSubmitAndWaitFor } from "./util";
 import { Queue, UnparsedQueue } from "./flowUtils/queue";
-
-declare type EntryFunctionPayload = {
-  function: string;
-  type_arguments: Array<string>;
-  arguments: Array<any>;
-};
-
-export function createOrderbookPayload(
-  baseTag: string,
-  quoteTag: string,
-  priceDecimals: number,
-  sizeDecimals: number,
-  minSizeAmount: number
-): EntryFunctionPayload {
-  return {
-    function: `${dexAddress}::book::create_orderbook`,
-    type_arguments: [baseTag, quoteTag],
-    arguments: [priceDecimals, sizeDecimals, minSizeAmount],
-  };
-}
+import {
+  createOrderbookPayload,
+  registerUserPayload,
+  placeLimitOrderPayload,
+  placeMarketOrderPayload,
+  cancelOrderPayload,
+  amendOrderPayload,
+} from "./payload";
 
 /**
  * Creates a new orderbook for the given base/quote pair.
@@ -36,6 +23,7 @@ export function createOrderbookPayload(
  *
  * @param client - The Aptos client.
  * @param account - The account that will own the orderbook.
+ * @param dexAddress - The dex address.
  * @param baseTag - The tag for the base currency of the orderbook, e.g. 0x1::aptos_coin::AptosCoin.
  * @param quoteTag - The tag for the quote currency of the orderbook.
  * @param priceDecimals - The number of decimals places the orderbook will allow for price.
@@ -50,6 +38,7 @@ export function createOrderbookPayload(
  * const txn = await createOrderbook(
  *   client,
  *   account,
+ *   "0xd",
  *   "0x1::aptos_coin::AptosCoin",
  *   "0x1::aptos_coin::AptosCoin",
  *   4,
@@ -68,6 +57,7 @@ export function createOrderbookPayload(
 export async function createOrderbook(
   client: AptosClient,
   account: AptosAccount,
+  dexAddress: HexString,
   baseTag: string,
   quoteTag: string,
   priceDecimals: number,
@@ -75,6 +65,7 @@ export async function createOrderbook(
   minSizeAmount: number
 ): Promise<Types.Transaction> {
   const payload = createOrderbookPayload(
+    dexAddress,
     baseTag,
     quoteTag,
     priceDecimals,
@@ -85,14 +76,6 @@ export async function createOrderbook(
   return await signSubmitAndWaitFor(client, account, rawTxn);
 }
 
-export function registerUserPayload(): EntryFunctionPayload {
-  return {
-    function: `${dexAddress}::book::register_user`,
-    type_arguments: [],
-    arguments: [],
-  };
-}
-
 /**
  * Register a user for Laminar.
  *
@@ -101,6 +84,7 @@ export function registerUserPayload(): EntryFunctionPayload {
  *
  * @param client - The Aptos client.
  * @param account - The account to register for the orderbook.
+ * @param dexAddress - The dex address.
  *
  * @returns - A promise containing the transaction.
  *
@@ -110,44 +94,22 @@ export function registerUserPayload(): EntryFunctionPayload {
  * const txn = await registerBookUser(
  *   client,
  *   account,
+ *   "0xd"
  * );
  * ```
  */
 export async function registerUser(
   client: AptosClient,
-  account: AptosAccount
+  account: AptosAccount,
+  dexAddress: HexString
 ): Promise<Types.Transaction> {
-  const payload = registerUserPayload();
+  const payload = registerUserPayload(dexAddress);
   const rawTxn = await client.generateTransaction(
     account.address(),
     payload,
     defaultOptions
   );
   return await signSubmitAndWaitFor(client, account, rawTxn);
-}
-
-export function placeLimitOrderPayload(
-  bookOwner: HexString,
-  baseTag: string,
-  quoteTag: string,
-  side: Side,
-  price: number,
-  size: number,
-  timeInForce: TimeInForce,
-  postOnly: boolean
-): EntryFunctionPayload {
-  return {
-    function: `${dexAddress}::book::place_limit_order`,
-    type_arguments: [baseTag, quoteTag],
-    arguments: [
-      bookOwner,
-      sideToU8(side),
-      price,
-      size,
-      timeInForceToU8(timeInForce),
-      postOnly,
-    ],
-  };
 }
 
 /**
@@ -157,6 +119,7 @@ export function placeLimitOrderPayload(
  *
  * @param client - The Aptos client.
  * @param account - The account placing the order.
+ * @param dexAddress - The dex address.
  * @param bookOwner - The address of the orderbook owner.
  * @param baseTag - The tag for the base currency of the orderbook.
  * @param quoteTag - The tag for the quote currency of the orderbook.
@@ -174,6 +137,7 @@ export function placeLimitOrderPayload(
  * const txn = await placeLimitOrder(
  *   client,
  *   account,
+ *   "0xd",
  *   "0xb",
  *   "0x1::aptos_coin::AptosCoin",
  *   "0x1::aptos_coin::AptosCoin",
@@ -193,6 +157,7 @@ export function placeLimitOrderPayload(
 export async function placeLimitOrder(
   client: AptosClient,
   account: AptosAccount,
+  dexAddress: HexString,
   bookOwner: HexString,
   baseTag: string,
   quoteTag: string,
@@ -203,6 +168,7 @@ export async function placeLimitOrder(
   postOnly: boolean
 ): Promise<Types.Transaction> {
   const payload = placeLimitOrderPayload(
+    dexAddress,
     bookOwner,
     baseTag,
     quoteTag,
@@ -220,20 +186,6 @@ export async function placeLimitOrder(
   return await signSubmitAndWaitFor(client, account, rawTxn);
 }
 
-export function placeMarketOrderPayload(
-  bookOwner: HexString,
-  baseTag: string,
-  quoteTag: string,
-  side: Side,
-  size: number
-): EntryFunctionPayload {
-  return {
-    function: `${dexAddress}::book::place_market_order`,
-    type_arguments: [baseTag, quoteTag],
-    arguments: [bookOwner, sideToU8(side), size],
-  };
-}
-
 /**
  * Place a market order.
  *
@@ -241,6 +193,7 @@ export function placeMarketOrderPayload(
  *
  * @param client - The Aptos client.
  * @param account - The account placing the order.
+ * @param dexAddress - The dex address.
  * @param bookOwner - The address of the orderbook owner.
  * @param baseTag - The tag for the base currency of the orderbook.
  * @param quoteTag - The tag for the quote currency of the orderbook.
@@ -255,6 +208,7 @@ export function placeMarketOrderPayload(
  * const txn = await placeMarketOrder(
  *   client,
  *   account,
+ *   "0xd",
  *   "0xb",
  *   "0x1::aptos_coin::AptosCoin",
  *   "0x1::aptos_coin::AptosCoin",
@@ -269,6 +223,7 @@ export function placeMarketOrderPayload(
 export async function placeMarketOrder(
   client: AptosClient,
   account: AptosAccount,
+  dexAddress: HexString,
   bookOwner: HexString,
   baseTag: string,
   quoteTag: string,
@@ -276,6 +231,7 @@ export async function placeMarketOrder(
   size: number
 ): Promise<Types.Transaction> {
   const payload = placeMarketOrderPayload(
+    dexAddress,
     bookOwner,
     baseTag,
     quoteTag,
@@ -290,25 +246,12 @@ export async function placeMarketOrder(
   return await signSubmitAndWaitFor(client, account, rawTxn);
 }
 
-export function cancelOrderPayload(
-  bookOwner: HexString,
-  baseTag: string,
-  quoteTag: string,
-  idCreationNum: number,
-  side: Side
-): EntryFunctionPayload {
-  return {
-    function: `${dexAddress}::book::cancel_order`,
-    type_arguments: [baseTag, quoteTag],
-    arguments: [bookOwner, idCreationNum, sideToU8(side)],
-  };
-}
-
 /**
  * Cancel an order.
  *
  * @param client - The Aptos client.
  * @param account - The account placing the order.
+ * @param dexAddress - The dex address.
  * @param bookOwner - The address of the orderbook owner.
  * @param baseTag - The tag for the base currency of the orderbook.
  * @param quoteTag - The tag for the quote currency of the orderbook.
@@ -323,6 +266,7 @@ export function cancelOrderPayload(
  * const txn = await placeMarketOrder(
  *   client,
  *   account,
+ *   "0xd",
  *   "0xb",
  *   "0x1::aptos_coin::AptosCoin",
  *   "0x1::aptos_coin::AptosCoin",
@@ -334,6 +278,7 @@ export function cancelOrderPayload(
 export async function cancelOrder(
   client: AptosClient,
   account: AptosAccount,
+  dexAddress: HexString,
   bookOwner: HexString,
   baseTag: string,
   quoteTag: string,
@@ -341,6 +286,7 @@ export async function cancelOrder(
   side: Side
 ): Promise<Types.Transaction> {
   const payload = cancelOrderPayload(
+    dexAddress,
     bookOwner,
     baseTag,
     quoteTag,
@@ -355,22 +301,6 @@ export async function cancelOrder(
   return await signSubmitAndWaitFor(client, account, rawTxn);
 }
 
-export function amendOrderPayload(
-  bookOwner: HexString,
-  baseTag: string,
-  quoteTag: string,
-  idCreationNum: number,
-  side: Side,
-  price: number,
-  size: number
-): EntryFunctionPayload {
-  return {
-    function: `${dexAddress}::book::amend_order`,
-    type_arguments: [baseTag, quoteTag],
-    arguments: [bookOwner, idCreationNum, sideToU8(side), price, size],
-  };
-}
-
 /**
  * Amend an order.
  *
@@ -380,6 +310,7 @@ export function amendOrderPayload(
  *
  * @param client - The Aptos client.
  * @param account - The account placing the order.
+ * @param dexAddress - The dex address.
  * @param bookOwner - The address of the orderbook owner.
  * @param baseTag - The tag for the base currency of the orderbook.
  * @param quoteTag - The tag for the quote currency of the orderbook.
@@ -396,6 +327,7 @@ export function amendOrderPayload(
  * const txn = await placeMarketOrder(
  *   client,
  *   account,
+ *   "0xd",
  *   "0xb",
  *   "0x1::aptos_coin::AptosCoin",
  *   "0x1::aptos_coin::AptosCoin",
@@ -416,6 +348,7 @@ export function amendOrderPayload(
 export async function amendOrder(
   client: AptosClient,
   account: AptosAccount,
+  dexAddress: HexString,
   bookOwner: HexString,
   baseTag: string,
   quoteTag: string,
@@ -425,6 +358,7 @@ export async function amendOrder(
   size: number
 ): Promise<Types.Transaction> {
   const payload = amendOrderPayload(
+    dexAddress,
     bookOwner,
     baseTag,
     quoteTag,

@@ -7,7 +7,7 @@ import {
   dexPrivateKey,
   faucetUrl,
   nodeUrl,
-} from "../src/constants";
+} from "../tests/constants";
 import { mintManagedCoin } from "../src/managedCoin";
 import { initDexResources, initUserResources } from "./helpers";
 
@@ -45,6 +45,7 @@ describe("gtc limit order", () => {
     const txn = await placeLimitOrder(
       client,
       user,
+      dex.address(),
       dex.address(),
       baseTag,
       quoteTag,
@@ -92,6 +93,7 @@ describe("gtc limit order", () => {
       client,
       user,
       dex.address(),
+      dex.address(),
       baseTag,
       quoteTag,
       "sell",
@@ -138,6 +140,7 @@ describe("gtc limit order", () => {
       client,
       askUser,
       dex.address(),
+      dex.address(),
       baseTag,
       quoteTag,
       "sell",
@@ -164,6 +167,7 @@ describe("gtc limit order", () => {
     const bidTxn = await placeLimitOrder(
       client,
       bidUser,
+      dex.address(),
       dex.address(),
       baseTag,
       quoteTag,

@@ -17,6 +17,7 @@ jobs:
           cache: "pnpm"
       - run: pnpm install
       - run: pnpm build
+      - run: grep -v dist .gitignore > .npmignore
       - run: pnpm publish --no-git-checks --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
