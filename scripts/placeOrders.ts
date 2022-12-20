@@ -7,7 +7,7 @@ import {
   userAddress,
   userPrivateKey,
 } from "../tests/constants";
-import { getBidsBookTop, placeLimitOrder, placeMarketOrder } from "../src/book";
+import { placeLimitOrder, placeMarketOrder } from "../src/book";
 import { logger } from "../tests/helpers";
 import { getBalance } from "../src/coin";
 import { Side, TimeInForce } from "../src";
@@ -83,7 +83,7 @@ async function placeRandomOrder(
 
 async function main() {
   const client = new AptosClient(nodeUrl);
-  // const faucetClient = new FaucetClient(nodeUrl, faucetUrl);
+  const faucetClient = new FaucetClient(nodeUrl, faucetUrl);
 
   const dex = new AptosAccount(dexPrivateKey, dexAddress);
 
@@ -91,15 +91,15 @@ async function main() {
   const quoteTag = `${dexAddress}::coin::FakeQuoteCoin`;
 
   const user = new AptosAccount(userPrivateKey, userAddress);
-  // await faucetClient.fundAccount(user.address(), 1e8);
+  await faucetClient.fundAccount(user.address(), 1e8);
 
-  // const userBalance = await getBalance(
-  //   client,
-  //   user.address(),
-  //   "0x1::aptos_coin::AptosCoin"
-  // );
+  const userBalance = await getBalance(
+    client,
+    user.address(),
+    "0x1::aptos_coin::AptosCoin"
+  );
 
-  // logger.info(`user balance is now ${userBalance}`);
+  logger.info(`user balance is now ${userBalance}`);
 
   setInterval(() => {
     placeRandomOrder(client, user, dex, baseTag, quoteTag);
