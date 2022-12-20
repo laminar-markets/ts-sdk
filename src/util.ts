@@ -72,6 +72,6 @@ export function timeInForceToU8(timeInForce: TimeInForce): number {
 }
 
 export const defaultOptions = {
-  max_gas_amount: "10000",
+  max_gas_amount: "50000",
   gas_unit_price: "100",
 };
